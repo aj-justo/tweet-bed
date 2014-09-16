@@ -136,7 +136,10 @@ SUIT_CONFIG = {
     # 'LIST_PER_PAGE': 15
 }
 
-from twitter_credentials import
+from twitter_credentials import (
+    OAUTH_TOKENS_TWITTER_CLIENT_SECRET,
+    OAUTH_TOKENS_TWITTER_CLIENT_ID
+)
 
 # twitter-api settings
 def twitter_api_get_token_callback():
