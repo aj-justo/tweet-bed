@@ -1,0 +1,61 @@
+{% load staticfiles %}
+
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="AJ Justo">
+    <link rel="shortcut icon" href="{{STATIC_URL}}img/favicon.ico">
+
+    <title>Tweet Bed</title>
+
+    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{STATIC_URL}}css/font-awesome.min.css">
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+
+    <!-- keep that one at the bottom so we can easily override rules -->
+    <link rel="stylesheet" href="{{STATIC_URL}}css/styles.css?v=1.0" type="text/css">
+
+    {% block extra_headers %}
+    {% endblock %}
+
+</head>
+<body>
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                Tweet Bed
+            </a>
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="#">Tweet Sheets</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class='container-fluid'>
+       {% block content %}
+       {% endblock %}
+    </div>
+
+    <script src="{{STATIC_URL}}js/lib/jquery-1.11.1.min.js"></script>
+    <script src="{{STATIC_URL}}js/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery.cookie.js"></script>
+
+
+    {% block footer_scripts %}
+
+    {% endblock %}
+
+</body>
+</html>

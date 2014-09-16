@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block footer_scripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // get tweeted tweets from cookie and mark them on DOM
+            // TODO need to do one cookie per sheet
+            var tweeted = $.cookie('tweeted');
+            if(typeof tweeted !== 'undefined') {
+                tweeted = JSON.parse(tweeted);
+                for(var t=0; t<tweeted.length(); t++){
+                    $('#tweet_' + tweeted[t]).addClass('done');
+                }
+            }
+
+            var tweetCount = {{ object_list.count }};
+            var $modal = $('#tweetingModal');
+
+            var showNextTweet = function() {
+                $modal = $('#tweetingModal');
+                // find first undone tweet
+                var $tweets = $('.tweet').not('.done');
+                if($tweets.length == 0){
+                    // we should not get here, but just in case I leave it for now
+                    $modal.modal('hide');
+                    return;
+                }
+                var $tweet = $tweets.first();
+                var tweetNum = $('.number', $tweet).text();
+                var tweetText = $('.text', $tweet).text();
+                var $tweetButton = $('.btn', $tweet);
+                var $modalHeader = $('.modal-header .modal-title', $modal);
+                $modalHeader.text("Tweet number " + tweetNum + " of " + tweetCount);
+                var tweetSheet = "{{ object_list.0.tweet_sheet }}";
+                $modalHeader.text($modalHeader.text() + " of the tweet sheet: " + tweetSheet)
+                var $modalContent = $('.modal-body', $modal);
+                $modalContent.text(tweetText);
+                var $modalFooter = $('.modal-footer', $modal);
+                {#            $modalFooter.html($tweetButton.html());#}
+                $modalFooter.attr('data-number', tweetNum);
+                if($tweets.length == 1) {
+                    $('#tweetAction').text('Tweet and finish (last tweet in sheet)');
+                }
+                $modal.modal('show');
+            };
+            showNextTweet();
+            // set the action of the tweet button
+            $('#tweetAction', $modal).click(function(event){
+                event.preventDefault();
+                tweet();
+                markTweetDone();
+                showNextTweet();
+            });
+            // action of the next button
+            $('#nextTweet', $modal).click(function(event){
+                event.preventDefault();
+                showNextTweet();
+            });
+            // marks a tweet as done in the DOM and the cookie
+            var markTweetDone = function() {
+                var number = $('.modal-footer', $modal).attr('data-number');
+                $('#tweet_' + number).addClass('done');
+                $.cookie('')
+            };
+            var tweet = function(){
+                var content = $('.modal-body', $modal).text();
+                // TODO call API to tweet
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>{{ object_list.0.tweet_sheet }}</h2>
+    <ul class="list-unstyled">
+        {% for tweet in object_list %}
+            <li id="tweet_{{ tweet.pk }}" class="row well tweet">
+                <div class="number col-sm-1 xs-hidden">{{ tweet.get_number }}</div>
+                <div class="text col-sm-8 col-xs-9 text-left">{{ tweet }}</div>
+                <div class="col-sm-3 col-xs-2 text-right">{{ tweet.render_button|safe }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div id="tweetingModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Tweet number </h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="tweetAction">
+                        <i class="fa fa-paper-plane"></i> Tweet
+                    </button>
+                    <br/><br/>
+                    <button type="button" class="btn btn-default" id="nextTweet">
+                        <i class="fa fa-forward"></i> Next one
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                        <i class="fa fa-times"></i> Close (and tweet manually)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

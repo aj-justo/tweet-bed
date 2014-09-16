@@ -1,0 +1,4 @@
+Django==1.7
+django-bootstrap3==4.11.0
+django-suit==0.2.10
+wsgiref==0.1.2

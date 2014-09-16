@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Active tweet sheets</h2>
+
+    <ul class="list-unstyled" id="sheets_wrapper">
+        {% for sheet in object_list %}
+            <li class="sheet row">
+                <a href="{% url 'tweet_list' sheet.id %}">
+                    <div class="date">{{ sheet.get_date }}</div>
+                    <div class="title">{{ sheet.title }}</div>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/lib/isotope.pkgd.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+           $('#sheets_wrapper').isotope({
+                // options
+                itemSelector: '.sheet',
+                layoutMode: 'fitRows',
+                getSortData: {
+                    title: '.title'
+                }
+            });
+        });
+    </script>
+{% endblock %}
