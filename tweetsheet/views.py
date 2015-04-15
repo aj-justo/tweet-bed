@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
@@ -6,6 +7,7 @@ from tweetsheet.models import Tweet, TweetSheet
 
 
 class HomeView(View):
+
     def get(self, request):
         return HttpResponseRedirect(reverse('sheet_list'))
 

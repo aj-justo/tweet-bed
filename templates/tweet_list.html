@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
+
+
 {% block footer_scripts %}
     <script type="text/javascript">
         $(document).ready(function(){
-            // get tweeted tweets from cookie and mark them on DOM
+            // get successfully done tweets from cookie and mark them on DOM
             // TODO need to do one cookie per sheet
             var tweeted = $.cookie('tweeted');
             if(typeof tweeted !== 'undefined') {
@@ -62,6 +64,7 @@
                 $('#tweet_' + number).addClass('done');
                 $.cookie('')
             };
+            // do the actual tweeting via authenticated API call
             var tweet = function(){
                 var content = $('.modal-body', $modal).text();
                 // TODO call API to tweet

@@ -7,11 +7,9 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-
+import tweepy
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS, STATICFILES_DIRS
-
-
 import os
 BASE_DIR = os.path.dirname(__file__)
 
@@ -32,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = (
     'suit',
     'grappelli',
@@ -41,16 +40,16 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tweetsheet',
     'bootstrap3',
     'django_extensions',
     'oauth_tokens',
     'taggit',
-    'twitter_api',
+    'social_auth',
+    'tweetsheet',
 )
-
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'social_auth.context_processors.social_auth_by_type_backends',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -106,6 +105,8 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
+
+
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
@@ -136,19 +137,15 @@ SUIT_CONFIG = {
     # 'LIST_PER_PAGE': 15
 }
 
-from twitter_credentials import (
-    OAUTH_TOKENS_TWITTER_CLIENT_SECRET,
-    OAUTH_TOKENS_TWITTER_CLIENT_ID
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
 )
 
-# twitter-api settings
-def twitter_api_get_token_callback():
-    import tweepy
-    auth = tweepy.OAuthHandler(OAUTH_TOKENS_TWITTER_CLIENT_ID,
-                               OAUTH_TOKENS_TWITTER_CLIENT_SECRET)
-    auth.username = ''                                              # username
-    auth.access_token = tweepy.oauth.OAuthToken('', '')             # pair of access tokens
-    auth.request_token = tweepy.oauth.OAuthToken('', '')            # pair of request tokens
-    return auth
+LOGIN_URL = '/login/twitter/'
+LOGIN_REDIRECT_URL = '/'
 
-TWITTER_API_ACCESS_TOKEN_CALLBACK = twitter_api_get_token_callback
+try:
+    from twitter_credentials import *
+except ImportError:
+    raise Exception("Please rename twitter_credentials_template.py to twitter_credentials.py and setup the values.")
+
