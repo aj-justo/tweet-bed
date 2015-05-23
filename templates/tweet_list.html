@@ -3,7 +3,12 @@
 
 
 {% block footer_scripts %}
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/bootbox.min.js"></script>
     <script type="text/javascript">
+        var TweetBed = {};
+        TweetBed.twitterAccessToken = '{{ session.user.twitter_access_token }}';
+
         $(document).ready(function(){
             // get successfully done tweets from cookie and mark them on DOM
             // TODO need to do one cookie per sheet
@@ -18,7 +23,7 @@
             var tweetCount = {{ object_list.count }};
             var $modal = $('#tweetingModal');
 
-            var showNextTweet = function() {
+            var showNextTweet = function(startingTweet) {
                 $modal = $('#tweetingModal');
                 // find first undone tweet
                 var $tweets = $('.tweet').not('.done');
@@ -27,8 +32,17 @@
                     $modal.modal('hide');
                     return;
                 }
+
                 var $tweet = $tweets.first();
-                var tweetNum = $('.number', $tweet).text();
+                if(startingTweet){
+                   // find the first tweet after this one that is not done
+                    $.each($tweets, function(i, e){
+                        if(parseInt($(e).attr('data-tweet-number')) > startingTweet) {
+                            $tweet = $(e);
+                        }
+                    });
+                }
+                var tweetNum = parseInt($tweet.attr('data-tweet-number'));
                 var tweetText = $('.text', $tweet).text();
                 var $tweetButton = $('.btn', $tweet);
                 var $modalHeader = $('.modal-header .modal-title', $modal);
@@ -45,18 +59,20 @@
                 }
                 $modal.modal('show');
             };
+
+            // show the first undone tweet when page loads
             showNextTweet();
+
             // set the action of the tweet button
             $('#tweetAction', $modal).click(function(event){
                 event.preventDefault();
                 tweet();
-                markTweetDone();
-                showNextTweet();
             });
             // action of the next button
             $('#nextTweet', $modal).click(function(event){
                 event.preventDefault();
-                showNextTweet();
+                var currentTweetNumber = $('.modal-footer', $modal).attr('data-number');
+                showNextTweet(currentTweetNumber);
             });
             // marks a tweet as done in the DOM and the cookie
             var markTweetDone = function() {
@@ -65,10 +81,51 @@
                 $.cookie('')
             };
             // do the actual tweeting via authenticated API call
-            var tweet = function(){
+            var tweet = function() {
                 var content = $('.modal-body', $modal).text();
-                // TODO call API to tweet
-            }
+                var number = $('.modal-footer', $modal).attr('data-number');
+                $.post("{% url 'twitter_update_status' %}", {
+                        status: content,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    })
+                    .success(function() {
+                        markTweetDone();
+                        showNextTweet(number);
+                    })
+                    .fail(function(response) {
+                        var msg = "What do you want to do next?";
+                        if(response && response.responseText){
+                            msg = 'Reason: <span class="danger">' + response.responseText + '</span><br>' + msg;
+                        }
+                        bootbox.dialog({
+                            message: msg,
+                            title: "Oops, the message could not be tweeted.",
+                            buttons: {
+                                skip: {
+                                    label: "Skip this tweet (re-try it later)",
+                                    className: "btn-success",
+                                    callback: function() {
+                                        showNextTweet(number);
+                                    }
+                                },
+                                mark: {
+                                    label: "Mark as done",
+                                    className: "btn-danger",
+                                    callback: function() {
+                                        markTweetDone();
+                                        showNextTweet(number);
+                                    }
+                                },
+                                retry: {
+                                    label: "Retry",
+                                    className: "btn-info",
+                                    callback: function() {
+                                    }
+                                }
+                            }
+                        });
+                    });
+            };
         });
     </script>
 {% endblock %}
@@ -77,7 +134,7 @@
     <h2>{{ object_list.0.tweet_sheet }}</h2>
     <ul class="list-unstyled">
         {% for tweet in object_list %}
-            <li id="tweet_{{ tweet.pk }}" class="row well tweet">
+            <li id="tweet_{{ tweet.pk }}" data-tweet-number="{{ tweet.get_number }}" class="row well tweet">
                 <div class="number col-sm-1 xs-hidden">{{ tweet.get_number }}</div>
                 <div class="text col-sm-8 col-xs-9 text-left">{{ tweet }}</div>
                 <div class="col-sm-3 col-xs-2 text-right">{{ tweet.render_button|safe }}</div>
@@ -101,7 +158,7 @@
                     </button>
                     <br/><br/>
                     <button type="button" class="btn btn-default" id="nextTweet">
-                        <i class="fa fa-forward"></i> Next one
+                        <i class="fa fa-forward"></i> Skip this one
                     </button>
                     <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
                         <i class="fa fa-times"></i> Close (and tweet manually)
