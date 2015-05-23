@@ -16,9 +16,9 @@ BASE_DIR = os.path.dirname(__file__)
 SECRET_KEY = 'y@q&603!c8*iwj75!rer*356frkcfl$+=_$g$ip2i2ma063-_qlalelo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -133,9 +133,7 @@ LOGIN_URL = '/login/twitter/'
 LOGIN_REDIRECT_URL = '/'
 
 try:
-    from twitter_credentials import *
+    from settings_local import *
 except ImportError:
-    raise Exception("No twitter_credentials.py file was found. "
-                    "Perhaps you need to rename twitter_credentials_template.py to twitter_credentials.py "
-                    "and setup the correct values.")
+    pass
 
