@@ -8,14 +8,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 import tweepy
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS, STATICFILES_DIRS
 import os
 BASE_DIR = os.path.dirname(__file__)
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'y@q&603!c8*iwj75!rer*356frkcfl$+=_$g$ip2i2ma063-_qlalelo'
@@ -26,10 +21,6 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
-# Application definition
-
 
 INSTALLED_APPS = (
     'suit',
@@ -47,6 +38,7 @@ INSTALLED_APPS = (
     'social_auth',
     'tweetsheet',
 )
+
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'social_auth.context_processors.social_auth_by_type_backends',
@@ -66,10 +58,8 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -90,7 +80,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
@@ -105,8 +94,6 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
-
-
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
@@ -120,6 +107,7 @@ SUIT_CONFIG = {
 
     # menu
     # 'SEARCH_URL': '/admin/auth/user/',
+
     'MENU_ICONS': {
        'sites': 'icon-leaf',
        'auth': 'icon-lock',
@@ -147,5 +135,7 @@ LOGIN_REDIRECT_URL = '/'
 try:
     from twitter_credentials import *
 except ImportError:
-    raise Exception("Please rename twitter_credentials_template.py to twitter_credentials.py and setup the values.")
+    raise Exception("No twitter_credentials.py file was found. "
+                    "Perhaps you need to rename twitter_credentials_template.py to twitter_credentials.py "
+                    "and setup the correct values.")
 
