@@ -1,3 +1,3 @@
-twitter_credentials.py
+settings_local.py
 *.iml
 *.sqlite3
