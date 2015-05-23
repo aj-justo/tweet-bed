@@ -1,6 +1,7 @@
 BeautifulSoup==3.2.1
 Django==1.7
 Pillow==2.8.1
+appier==0.9.1
 django-annoying==0.8.0
 django-bootstrap3==4.11.0
 django-extensions==1.4.0
@@ -12,9 +13,12 @@ django-suit==0.2.10
 django-taggit==0.12.1
 httplib2==0.9.1
 oauth2==1.5.211
+oauthlib==0.7.2
 python-dateutil==2.2
 python-openid==2.2.5
+python-twitter==2.2
 requests==1.2.0
+requests-oauthlib==0.4.2
 six==1.7.3
 tweepy==2.3.0
 tyoi.OAuth2==0.2.1
